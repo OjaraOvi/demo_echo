@@ -23,12 +23,10 @@ func CreateUser(c echo.Context) error {
 	var user models.User
 	defer cancel()
 
-	//validate the request body
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: &echo.Map{"data": err.Error()}})
 	}
 
-	//use the validator library to validate required fields
 	if validationErr := validate.Struct(&user); validationErr != nil {
 		return c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: &echo.Map{"data": validationErr.Error()}})
 	}
@@ -59,7 +57,6 @@ func GetAllUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
 	}
 
-	//reading from the db in an optimal way
 	defer results.Close(ctx)
 	for results.Next(ctx) {
 		var singleUser models.User
@@ -73,6 +70,7 @@ func GetAllUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
 }
 
+//deprecate
 func GetUser(c echo.Context) error {
 	u := &dto.User{
 		Name:  "Octavio",
