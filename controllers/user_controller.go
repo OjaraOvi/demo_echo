@@ -70,6 +70,15 @@ func GetAllUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
 }
 
+/*
+func restricted(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*jwtCustomClaims)
+	name := claims.Name
+	return c.String(http.StatusOK, "Welcome "+name+"!")
+}
+*/
+
 //deprecate
 func GetUser(c echo.Context) error {
 	u := &dto.User{
