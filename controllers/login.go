@@ -3,33 +3,41 @@ package controllers
 import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 	"myAppEcho/configs"
+	"myAppEcho/models"
 	"net/http"
 	"time"
 )
 
 func Login(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	username := c.FormValue("username")
 	password := c.FormValue("password")
+	var user models.User
+	defer cancel()
+	err := userCollection.FindOne(ctx, bson.M{"name": username}).Decode(&user)
 
-	// Throws unauthorized error
-	if username != "jon" || password != "shhh!" {
+	if username != user.Name {
+		return echo.ErrUnauthorized
+	}
+	error := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if error != nil {
 		return echo.ErrUnauthorized
 	}
 
-	// Set custom claims
 	claims := &configs.JwtCustomClaims{
-		"Jon Snow",
+		user.Name,
 		true,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
 	}
 
-	// Create token with claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	// Generate encoded token and send it as response.
 	t, err := token.SignedString([]byte("secret"))
 	if err != nil {
 		return err

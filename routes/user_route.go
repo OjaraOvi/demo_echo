@@ -21,4 +21,7 @@ func UserRoute(e *echo.Echo) {
 	e.POST("/login", controllers.Login)
 	r.POST("/user", controllers.CreateUser)
 	r.GET("/users", controllers.GetAllUser)
+	r.GET("/user/:userId", controllers.GetAUser)
+	r.PUT("/user/:userId", controllers.EditAUser)
+	r.DELETE("/user/:userId", controllers.DeleteAUser)
 }
