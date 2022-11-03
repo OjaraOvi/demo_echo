@@ -1,22 +1,27 @@
-package controllers
+package login
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
+	"myAppEcho/api/user"
 	"myAppEcho/configs"
-	"myAppEcho/models"
 	"net/http"
 	"time"
 )
+
+var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
+var validate = validator.New()
 
 func Login(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	username := c.FormValue("username")
 	password := c.FormValue("password")
-	var user models.User
+	var user user.User
 	defer cancel()
 	err := userCollection.FindOne(ctx, bson.M{"name": username}).Decode(&user)
 
