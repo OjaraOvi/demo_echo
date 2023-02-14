@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+    "github.com/rs/zerolog"
+	"os"
 	"myAppEcho/api/login"
 	"myAppEcho/api/user"
 	"myAppEcho/configs"
@@ -10,7 +12,19 @@ import (
 
 func main() {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Msg("request")
+
+			return nil
+		},
+	}))
 	e.Use(middleware.Recover())
 	configs.ConnectDB()
 	route(e)

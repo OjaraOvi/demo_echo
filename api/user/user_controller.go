@@ -1,6 +1,8 @@
 package user
 
 import (
+	"github.com/rs/zerolog"
+	"os"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,8 +18,9 @@ import (
 
 var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
 var validate = validator.New()
-
+var logger = zerolog.New(os.Stdout)
 type Handler struct {
+	
 }
 
 func (h *Handler) CreateUser(c echo.Context) error {
@@ -47,7 +50,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.Response{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
 	}
-
+	//logger.Info().Msg("request")
 	return c.JSON(http.StatusCreated, utils.Response{Status: http.StatusCreated, Message: "success", Data: &echo.Map{"data": result}})
 }
 
@@ -71,7 +74,7 @@ func GetAllUser(c echo.Context) error {
 
 		users = append(users, singleUser)
 	}
-
+	logger.Info().Msg("soy el get user")
 	return c.JSON(http.StatusOK, utils.Response{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
 }
 
