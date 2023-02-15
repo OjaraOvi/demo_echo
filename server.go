@@ -7,6 +7,7 @@ import (
 	"os"
 	"myAppEcho/api/login"
 	"myAppEcho/api/user"
+	"myAppEcho/api/category"
 	"myAppEcho/configs"
 )
 
@@ -49,4 +50,7 @@ func route(e *echo.Echo) {
 	r.GET("/user/:userId", user.GetAUser)
 	r.PUT("/user/:userId", user.EditAUser)
 	r.DELETE("/user/:userId", user.DeleteAUser)
+
+	r.POST("/category", category.CreateCategory)
+	r.GET("/categories", category.GetAllCategory)
 }
